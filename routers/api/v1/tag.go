@@ -43,7 +43,7 @@ func AddTag(c *gin.Context) {
 	// 绑定JSON数据
 	var tag models.Tag
 	_ = c.BindJSON(&tag)
-	log.Println(tag)
+
 	code := e.INVALID_PARAMS
 	// 参数验证
 	valid := validation.Validation{}
@@ -52,6 +52,7 @@ func AddTag(c *gin.Context) {
 	valid.Required(tag.CreatedBy, "create_by").Message("创建人不能为空")
 	valid.MaxSize(tag.CreatedBy, 100, "create_by").Message("创建人最长为100字符")
 	valid.Range(tag.State, 0, 1, "state").Message("状态只允许0或1")
+
 	if !valid.HasErrors() {
 		// 标签名存在校验
 		if models.ExistedTagByName(tag.Name) {
@@ -70,10 +71,59 @@ func AddTag(c *gin.Context) {
 	})
 }
 
+// UpdateTag 更新标签
 func UpdateTag(c *gin.Context) {
+	// 通过
+	id := com.StrTo(c.Param("id")).MustInt()
+	var tag models.Tag
+	_ = c.BindJSON(&tag)
 
+	valid := validation.Validation{}
+	valid.Required(id, "id").Message("标签ID不能为空")
+	valid.Required(tag.ModifiedBy, "modified_by").Message("修改人不能为空")
+	valid.MaxSize(tag.ModifiedBy, 100, "modified_by").Message("修改人最长为100字符")
+	valid.MaxSize(tag.Name, 100, "name").Message("标签名称最长为100字符")
+	valid.Range(tag.State, 0, 1, "state").Message("标签状态只能是0和1")
+
+	code := e.INVALID_PARAMS
+	if !valid.HasErrors() {
+		if !models.ExistedTagById(id) {
+			code = e.ERROR_NOT_EXIST_TAG
+		} else {
+			models.UpdateTag(id, tag)
+			code = e.SUCCESS
+		}
+	} else {
+		for _, v := range valid.Errors {
+			log.Println(v.Message)
+		}
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"code": code,
+		"msg":  e.GetMsg(code),
+	})
 }
 
+// DeleteTag 删除标签
 func DeleteTag(c *gin.Context) {
+	id := com.StrTo(c.Param("id")).MustInt()
 
+	valid := validation.Validation{}
+	valid.Required(id, "id").Message("标签ID不能为空")
+
+	code := e.INVALID_PARAMS
+	if !valid.HasErrors() {
+		if !models.ExistedTagById(id) {
+			code = e.ERROR_NOT_EXIST_TAG
+		} else {
+			models.DeleteTag(id)
+			code = e.SUCCESS
+		}
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"code": code,
+		"msg":  e.GetMsg(code),
+	})
 }

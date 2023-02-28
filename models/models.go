@@ -14,8 +14,8 @@ var db *gorm.DB
 // Model 定义基础的模型字段
 type Model struct {
 	ID         int `gorm:"primary_key" json:"id"`
-	CreatedOn  int `json:"created_on"`
-	ModifiedOn int `json:"modified_on"`
+	CreatedOn  int `gorm:"autoCreateTime" json:"created_on"`
+	ModifiedOn int `gorm:"autoUpdateTime" json:"modified_on"`
 }
 
 // init 初始化数据库连接

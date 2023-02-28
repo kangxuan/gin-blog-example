@@ -31,6 +31,16 @@ func ExistedTagByName(name string) bool {
 	return false
 }
 
+// ExistedTagById 判断标签ID
+func ExistedTagById(id int) bool {
+	var tag Tag
+	db.Select("id").Where("id=?", id).Find(&tag)
+	if tag.ID > 0 {
+		return true
+	}
+	return false
+}
+
 // AddTag 添加标签
 func AddTag(name string, state int, createBy string) bool {
 	err := db.Create(&Tag{
@@ -41,5 +51,19 @@ func AddTag(name string, state int, createBy string) bool {
 	if err != nil {
 		return false
 	}
+	return true
+}
+
+// UpdateTag 更新标签
+func UpdateTag(id int, data interface{}) bool {
+	db.Model(&Tag{}).Where("id=?", id).Updates(data)
+
+	return true
+}
+
+// DeleteTag 删除标签
+func DeleteTag(id int) bool {
+	db.Model(&Tag{}).Where("id=?", id).Delete(&Tag{})
+
 	return true
 }
