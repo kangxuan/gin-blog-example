@@ -10,7 +10,7 @@ import (
 // InitRouter 初始化路由
 func InitRouter() *gin.Engine {
 	r := gin.New() // 不使用gin.Default()，为了不打印Warning
-	//r:=gin.Default()
+	//r := gin.Default()
 	r.Use(gin.Logger(), gin.Recovery())
 
 	// 设置模式

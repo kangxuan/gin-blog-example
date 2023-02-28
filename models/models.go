@@ -14,15 +14,15 @@ var db *gorm.DB
 // Model 定义基础的模型字段
 type Model struct {
 	ID         int `gorm:"primary_key" json:"id"`
-	CreateOn   int `json:"create_on"`
+	CreatedOn  int `json:"created_on"`
 	ModifiedOn int `json:"modified_on"`
 }
 
 // init 初始化数据库连接
 func init() {
 	var (
-		err                                        error
-		dbType, dbName, user, password, host, port string
+		err                                                     error
+		dbType, dbName, user, password, host, port, tablePrefix string
 	)
 
 	sec, err := settings.Cfg.GetSection("database")
@@ -36,13 +36,13 @@ func init() {
 	password = sec.Key("PASSWORD").String()
 	host = sec.Key("HOST").String()
 	port = sec.Key("PORT").String()
-	//tablePrefix = sec.Key("TABLE_PREFIX").String()
+	tablePrefix = sec.Key("TABLE_PREFIX").String()
 
 	if dbType == "mysql" {
 		db, err = gorm.Open(mysql.Open(fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", user, password, host, port, dbName)), &gorm.Config{
 			NamingStrategy: schema.NamingStrategy{
-				TablePrefix:   "blog_", // 表前缀
-				SingularTable: true,    // 禁用复数表名
+				TablePrefix:   tablePrefix, // 表前缀
+				SingularTable: true,        // 禁用复数表名
 			},
 		})
 	} else {

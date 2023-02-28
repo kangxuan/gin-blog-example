@@ -5,7 +5,7 @@ type Tag struct {
 	Name       string `json:"name"`
 	CreatedBy  string `json:"created_by"`
 	ModifiedBy string `json:"modified_by"`
-	DeleteOn   int    `json:"delete_on"`
+	DeletedOn  int    `json:"deleted_on"`
 	State      int    `json:"state"`
 }
 
@@ -19,4 +19,27 @@ func GetTags(pageNum int, pageSize int, maps interface{}) (tags []Tag) {
 func GetTagTotal(maps interface{}) (total int64) {
 	db.Model(&Tag{}).Where(maps).Count(&total)
 	return
+}
+
+// ExistedTagByName 判断标签名称
+func ExistedTagByName(name string) bool {
+	var tag Tag
+	db.Select("id").Where("name=?", name).First(&tag)
+	if tag.ID > 0 {
+		return true
+	}
+	return false
+}
+
+// AddTag 添加标签
+func AddTag(name string, state int, createBy string) bool {
+	err := db.Create(&Tag{
+		Name:      name,
+		State:     state,
+		CreatedBy: createBy,
+	}).Error
+	if err != nil {
+		return false
+	}
+	return true
 }
