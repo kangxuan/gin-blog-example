@@ -3,6 +3,7 @@ package api
 import (
 	"gin-blog-example/models"
 	"gin-blog-example/pkg/e"
+	"gin-blog-example/pkg/logging"
 	"gin-blog-example/pkg/util"
 	"github.com/astaxie/beego/validation"
 	"github.com/gin-gonic/gin"
@@ -28,7 +29,7 @@ func GetAuth(c *gin.Context) {
 	code := e.INVALID_PARAMS
 	if !ok {
 		for _, err := range valid.Errors {
-			log.Println(err.Key, err.Message)
+			logging.Info(err.Key, err.Message)
 		}
 	} else {
 		if models.CheckAuth(auth.Username, auth.Password) {

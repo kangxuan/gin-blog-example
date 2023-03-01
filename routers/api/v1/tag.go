@@ -3,6 +3,7 @@ package v1
 import (
 	"gin-blog-example/models"
 	"gin-blog-example/pkg/e"
+	"gin-blog-example/pkg/logging"
 	"gin-blog-example/pkg/util"
 	"gin-blog-example/settings"
 	"github.com/astaxie/beego/validation"
@@ -62,6 +63,10 @@ func AddTag(c *gin.Context) {
 				code = e.ERROR_ADD_TAG_FAIL
 			}
 			code = e.SUCCESS
+		}
+	} else {
+		for _, err := range valid.Errors {
+			logging.Info(err.Key, err.Message)
 		}
 	}
 
