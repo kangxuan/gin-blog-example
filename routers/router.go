@@ -1,7 +1,8 @@
 package routers
 
 import (
-	"gin-blog-example/pkg/e"
+	"gin-blog-example/middleware"
+	"gin-blog-example/routers/api"
 	v1 "gin-blog-example/routers/api/v1"
 	"gin-blog-example/settings"
 	"github.com/gin-gonic/gin"
@@ -15,14 +16,14 @@ func InitRouter() *gin.Engine {
 
 	// 设置模式
 	gin.SetMode(settings.RunMode)
-	r.GET("/test", func(c *gin.Context) {
-		c.JSON(e.SUCCESS, gin.H{
-			"message": "Ok",
-		})
-	})
+
+	// 登录
+	r.POST("/auth", api.GetAuth)
 
 	// 注册路由
 	apiV1 := r.Group("/v1")
+	// 针对部分接口进行jwt鉴权，记住这里只能写到具体接口之前，否则不生效
+	apiV1.Use(middleware.JWT())
 	{
 		// 标签
 		apiV1.GET("/tags", v1.GetTags)
