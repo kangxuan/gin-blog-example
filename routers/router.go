@@ -1,14 +1,17 @@
 package routers
 
 import (
+	_ "gin-blog-example/docs"
 	"gin-blog-example/middleware"
 	"gin-blog-example/routers/api"
 	v1 "gin-blog-example/routers/api/v1"
 	"gin-blog-example/settings"
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
-// InitRouter 初始化路由
+// InitRouter initialize routing information
 func InitRouter() *gin.Engine {
 	r := gin.New() // 不使用gin.Default()，为了不打印Warning
 	//r := gin.Default()
@@ -16,6 +19,9 @@ func InitRouter() *gin.Engine {
 
 	// 设置模式
 	gin.SetMode(settings.RunMode)
+
+	// docs
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	// 登录
 	r.POST("/auth", api.GetAuth)

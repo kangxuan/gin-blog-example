@@ -39,7 +39,12 @@ func GetTags(c *gin.Context) {
 	})
 }
 
-// AddTag 添加标签
+// AddTag godoc
+// @Summary 新增文章标签
+// @Produce  json
+// @Param tag body models.Tag true "Add Tag"
+// @Success 200 {string} json "{"code":200,"data":{},"msg":"ok"}"
+// @Router /api/v1/tags [post]
 func AddTag(c *gin.Context) {
 	// 绑定JSON数据
 	var tag models.Tag

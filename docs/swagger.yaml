@@ -1,0 +1,41 @@
+definitions:
+  models.Tag:
+    properties:
+      created_by:
+        type: string
+      created_on:
+        type: integer
+      deleted_on:
+        type: integer
+      id:
+        type: integer
+      modified_by:
+        type: string
+      modified_on:
+        type: integer
+      name:
+        type: string
+      state:
+        type: integer
+    type: object
+info:
+  contact: {}
+paths:
+  /api/v1/tags:
+    post:
+      parameters:
+      - description: Add Tag
+        in: body
+        name: tag
+        required: true
+        schema:
+          $ref: '#/definitions/models.Tag'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"msg":"ok"}'
+          schema:
+            type: string
+      summary: 新增文章标签
+swagger: "2.0"
