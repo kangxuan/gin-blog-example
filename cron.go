@@ -12,7 +12,7 @@ func main() {
 	// 根据本地时间创建一个新（空白）的 Cron job runner
 	c := cron.New()
 	// AddFunc 会向 Cron job runner 添加一个 func ，以按给定的时间表运行
-	c.AddFunc("* * * * * *", func() {
+	_ = c.AddFunc("* * * * * *", func() {
 		logging.Info("执行一次")
 	})
 	c.Start()
