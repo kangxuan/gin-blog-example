@@ -19,7 +19,7 @@ type App struct {
 
 	ImagePrefixUrl string
 	ImageSavePath  string
-	ImageMaxSize   string
+	ImageMaxSize   int
 	ImageAllowExts []string
 
 	LogSavePath string
