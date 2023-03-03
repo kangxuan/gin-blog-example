@@ -11,7 +11,8 @@ import (
 type Level int
 
 var (
-	F *os.File
+	F   *os.File
+	err error
 
 	DefaultPrefix      = ""
 	DefaultCallerDepth = 2
@@ -29,9 +30,12 @@ const (
 	FATAL
 )
 
-func init() {
-	filePath := getLogFileFullPath()
-	F = openLogFile(filePath)
+// SetUp 初始化日志配置
+func SetUp() {
+	F, err = openLogFile(getLogFileName(), getLogFilePath())
+	if err != nil {
+		log.Fatalln(err)
+	}
 
 	logger = log.New(F, DefaultPrefix, log.LstdFlags)
 }

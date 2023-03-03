@@ -40,7 +40,7 @@ func GetArticles(c *gin.Context) {
 	code := e.INVALID_PARAMS
 	if !valid.HasErrors() {
 		code = e.SUCCESS
-		data["list"] = models.GetArticles(util.GetPage(c), settings.PageSize, maps)
+		data["list"] = models.GetArticles(util.GetPage(c), settings.AppSetting.PageSize, maps)
 		data["total"] = models.GetArticlesTotal(maps)
 	}
 

@@ -8,51 +8,84 @@ import (
 
 var (
 	Cfg *ini.File
-
-	RunMode string
-
-	HttpPort     int // HTTP_PORT
-	ReadTimeout  int // 读超时
-	WriteTimeout int // 写超时
-
-	JwtSecret string
-	PageSize  int
+	err error
 )
 
-func init() {
+type App struct {
+	JwtSecret string
+	PageSize  int
+
+	RuntimeRootPath string
+
+	ImagePrefixUrl string
+	ImageSavePath  string
+	ImageMaxSize   string
+	ImageAllowExts []string
+
+	LogSavePath string
+	LogSaveName string
+	LogFileExt  string
+	TimeFormat  string
+}
+
+var AppSetting = &App{}
+
+type Server struct {
+	RunMode      string
+	HttpPort     int
+	ReadTimeout  time.Duration
+	WriteTimeout time.Duration
+}
+
+var ServerSetting = &Server{}
+
+type Database struct {
+	Type        string
+	User        string
+	Password    string
+	Host        string
+	Port        string
+	Name        string
+	TablePrefix string
+}
+
+var DatabaseSetting = &Database{}
+
+func SetUp() {
 	// 利用ini加载配置
-	var err error
 	Cfg, err = ini.Load("conf/app.ini")
 	if err != nil {
 		log.Fatalf("Fail to parse 'conf/app.ini': %v", err)
 	}
 
-	LoadBase()
 	LoadServer()
 	LoadApp()
+	LoadDatabase()
 }
 
-func LoadBase() {
-	// Section是分区，如果没有分区则为默认""
-	RunMode = Cfg.Section("").Key("RUN_MODE").MustString("debug")
-}
-
+// LoadServer 加载ServerSetting
 func LoadServer() {
-	sec, err := Cfg.GetSection("server")
+	err = Cfg.Section("server").MapTo(ServerSetting)
 	if err != nil {
-		log.Fatalf("Fail to get section 'server': %v", err)
+		log.Fatalf("Cfg.MapTo ServerSetting err: %v", err)
 	}
-
-	HttpPort = sec.Key("HTTP_PORT").MustInt(8000)
-	ReadTimeout = int(time.Duration(sec.Key("READ_TIMEOUT").MustInt(60)) * time.Second)
-	WriteTimeout = int(time.Duration(sec.Key("WRITE_TIMEOUT").MustInt(60)) * time.Second)
+	// 这两句一定要加上，因为这里是按纳秒传进去的，需要乘以秒的单位，如果按纳秒服务在纳秒之内不返回数据则会失败。
+	ServerSetting.ReadTimeout = ServerSetting.ReadTimeout * time.Second
+	ServerSetting.WriteTimeout = ServerSetting.ReadTimeout * time.Second
 }
 
+// LoadApp 加载AppSetting
 func LoadApp() {
-	sec, err := Cfg.GetSection("app")
+	err = Cfg.Section("app").MapTo(AppSetting)
 	if err != nil {
-		log.Fatalf("Fail to get section 'app': %v", err)
+		log.Fatalf("Cfg.MapTo AppSetting err: %v", err)
 	}
-	JwtSecret = sec.Key("JWT_SECRET").MustString("!@)*#)!@U#@*!@!)")
-	PageSize = sec.Key("PAGE_SIZE").MustInt(10)
+}
+
+// LoadDatabase 加载DatabaseSetting
+func LoadDatabase() {
+	err = Cfg.Section("database").MapTo(DatabaseSetting)
+	if err != nil {
+		log.Fatalf("Cfg.MapTo DatabaseSetting err: %v", err)
+	}
 }
