@@ -20,8 +20,11 @@ func GetImagePath() string {
 
 // GetImageName 获取图片保存的名称
 func GetImageName(name string) string {
+	// 取图片后缀
 	ext := path.Ext(name)
+	// 取文件名称
 	fileName := strings.TrimPrefix(name, ext)
+	// 对文件名称md5加密
 	fileName = util.EncodeMD5(fileName)
 
 	return fileName + ext
@@ -60,18 +63,20 @@ func CheckImageSize(f multipart.File) bool {
 	return size <= settings.AppSetting.ImageMaxSize
 }
 
-// CheckImage 检查图片
+// CheckImage 检查上传图片所需（权限、文件夹）
 func CheckImage(src string) error {
 	dir, err := os.Getwd()
 	if err != nil {
 		return fmt.Errorf("os.Getwd err: %v", err)
 	}
 
+	// 检查图片路径是否存在并创建
 	err = file.IsNotExistedMkDir(dir + src)
 	if err != nil {
 		return fmt.Errorf("file.IsNotExistMkDir err: %v", err)
 	}
 
+	// 检查文件权限
 	perm := file.CheckPermission(src)
 	if perm == true {
 		return fmt.Errorf("file.CheckPermission Permission denied src: %s", src)

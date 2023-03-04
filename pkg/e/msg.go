@@ -1,19 +1,23 @@
 package e
 
 var MsgFlags = map[int]string{
-	SUCCESS:                        "ok",
-	ERROR:                          "fail",
-	INVALID_PARAMS:                 "请求参数错误",
-	ERROR_EXIST_TAG:                "已存在该标签名称",
-	ERROR_NOT_EXIST_TAG:            "该标签不存在",
-	ERROR_ADD_TAG_FAIL:             "添加标签失败",
-	ERROR_NOT_EXIST_ARTICLE:        "该文章不存在",
-	ERROR_AUTH_CHECK_TOKEN_FAIL:    "Token鉴权失败",
-	ERROR_AUTH_CHECK_TOKEN_TIMEOUT: "Token已超时",
-	ERROR_AUTH_TOKEN:               "Token生成失败",
-	ERROR_AUTH:                     "账号密码错误",
-	ERROR_ADD_ARTCLIE_FAIL:         "添加文章失败",
-	ERROR_DELETE_ARTCLIE_FAIL:      "删除文章失败",
+	SUCCESS:                         "ok",
+	ERROR:                           "fail",
+	INVALID_PARAMS:                  "请求参数错误",
+	ERROR_EXIST_TAG:                 "已存在该标签名称",
+	ERROR_NOT_EXIST_TAG:             "该标签不存在",
+	ERROR_ADD_TAG_FAIL:              "添加标签失败",
+	ERROR_NOT_EXIST_ARTICLE:         "该文章不存在",
+	ERROR_AUTH_CHECK_TOKEN_FAIL:     "Token鉴权失败",
+	ERROR_AUTH_CHECK_TOKEN_TIMEOUT:  "Token已超时",
+	ERROR_AUTH_TOKEN:                "Token生成失败",
+	ERROR_AUTH:                      "账号密码错误",
+	ERROR_ADD_ARTCLIE_FAIL:          "添加文章失败",
+	ERROR_DELETE_ARTCLIE_FAIL:       "删除文章失败",
+	ERROR_UPLOAD_CHECK_IMAGE_FORMAT: "图片上传格式错误",
+	ERROR_UPLOAD_CHECK_IMAGE_SIZE:   "图片上传大小超限",
+	ERROR_UPLOAD_CHECK_IMAGE_FAIL:   "图片上传检查失败",
+	ERROR_UPLOAD_SAVE_IMAGE_FAIL:    "图片上传失败",
 }
 
 // GetMsg 获取错误信息

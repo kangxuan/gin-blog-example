@@ -29,6 +29,9 @@ func InitRouter() *gin.Engine {
 	// 开始爬虫
 	r.POST("/start-sp", api.StartSp)
 
+	// 图片上传
+	r.POST("/upload-image", api.UploadImage)
+
 	// 注册路由
 	apiV1 := r.Group("/v1")
 	// 针对部分接口进行jwt鉴权，记住这里只能写到具体接口之前，否则不生效
