@@ -51,6 +51,16 @@ type Database struct {
 
 var DatabaseSetting = &Database{}
 
+type Redis struct {
+	Host        string
+	Password    string
+	MaxIdle     int           // 最大空闲连接数
+	MaxActive   int           // 在给定时间内，允许分配的最大连接数（当为0时，没有限制）
+	IdleTimeout time.Duration // 在给定时间内将会保持空闲状态，达到这个时间限制则会关闭连接（当为0时，没有限制）
+}
+
+var RedisSetting = &Redis{}
+
 func SetUp() {
 	// 利用ini加载配置
 	Cfg, err = ini.Load("conf/app.ini")
@@ -61,6 +71,7 @@ func SetUp() {
 	LoadServer()
 	LoadApp()
 	LoadDatabase()
+	LoadRedis()
 }
 
 // LoadServer 加载ServerSetting
@@ -87,5 +98,13 @@ func LoadDatabase() {
 	err = Cfg.Section("database").MapTo(DatabaseSetting)
 	if err != nil {
 		log.Fatalf("Cfg.MapTo DatabaseSetting err: %v", err)
+	}
+}
+
+// LoadRedis 加载RedisSetting
+func LoadRedis() {
+	err = Cfg.Section("redis").MapTo(RedisSetting)
+	if err != nil {
+		log.Fatalf("Cfg.MapTo RedisSetting err: %v", err)
 	}
 }
