@@ -3,12 +3,14 @@ package routers
 import (
 	_ "gin-blog-example/docs"
 	"gin-blog-example/middleware"
+	"gin-blog-example/pkg/upload"
 	"gin-blog-example/routers/api"
 	v1 "gin-blog-example/routers/api/v1"
 	"gin-blog-example/settings"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
+	"net/http"
 )
 
 // InitRouter initialize routing information
@@ -31,6 +33,9 @@ func InitRouter() *gin.Engine {
 
 	// 图片上传
 	r.POST("/upload-image", api.UploadImage)
+
+	// 图片访问
+	r.StaticFS("/upload/images", http.Dir(upload.GetImageFullPath()))
 
 	// 注册路由
 	apiV1 := r.Group("/v1")
