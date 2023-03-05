@@ -1,33 +1,51 @@
 package models
 
+import (
+	"gorm.io/gorm"
+)
+
 type Article struct {
 	Model
 
 	TagId int `json:"tag_id"`
 
-	Title      string `json:"title"`
-	Desc       string `json:"desc"`
-	Content    string `json:"content"`
-	CreatedBy  string `json:"created_by"`
-	ModifiedBy string `json:"modified_by"`
-	DeletedOn  int    `json:"deleted_on"`
-	State      int    `json:"state"`
+	Title         string `json:"title"`
+	Desc          string `json:"desc"`
+	Content       string `json:"content"`
+	CoverImageUrl string `json:"cover_image_url"`
+	CreatedBy     string `json:"created_by"`
+	ModifiedBy    string `json:"modified_by"`
+	DeletedOn     int    `json:"deleted_on"`
+	State         int    `json:"state"`
 }
 
 type ArticleResult struct {
-	Article
+	ID            int
+	TagID         int
+	Title         string
+	Desc          string
+	Content       string
+	CoverImageUrl string
+	State         int
+	CreatedBy     string
+	ModifiedBy    string
+	TagName       string
 
-	TagName string `json:"tag_name"`
+	PageNum  int
+	PageSize int
 }
 
 // GetArticlesTotal 获取文章总数
-func GetArticlesTotal(maps map[string]interface{}) (total int64) {
-	db.Model(&Article{}).Where(maps).Count(&total)
-	return
+func GetArticlesTotal(maps map[string]interface{}) (int64, error) {
+	var total int64
+	if err := db.Model(&Article{}).Where(maps).Count(&total).Error; err != nil {
+		return 0, err
+	}
+	return total, nil
 }
 
 // GetArticles 获取文章列表
-func GetArticles(pageNum int, pageSize int, maps map[string]interface{}) (articleResult []ArticleResult) {
+func GetArticles(pageNum int, pageSize int, maps map[string]interface{}) (articleResult []*ArticleResult) {
 	db.Debug().Model(&Article{}).
 		Select("blog_article.*, blog_tag.name as tag_name").
 		Joins("left join blog_tag on blog_article.tag_id=blog_tag.id").
@@ -36,8 +54,8 @@ func GetArticles(pageNum int, pageSize int, maps map[string]interface{}) (articl
 }
 
 // GetArticleById 根据ID获取单个文章
-func GetArticleById(id int) interface{} {
-	result := ArticleResult{}
+func GetArticleById(id int) *ArticleResult {
+	result := &ArticleResult{}
 	db.Debug().Model(&Article{}).
 		Select("blog_article.*, blog_tag.name as tag_name").
 		Joins("left join blog_tag on blog_article.tag_id=blog_tag.id").
@@ -46,13 +64,18 @@ func GetArticleById(id int) interface{} {
 }
 
 // ExistedArticleById 判断文章ID是否存在
-func ExistedArticleById(id int) bool {
+func ExistedArticleById(id int) (bool, error) {
 	var article Article
-	db.Where("id=?", id).Select("id").First(&article)
-	if article.ID > 0 {
-		return true
+	err := db.Select("id").Where("id=?", id).First(&article).Error
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return false, err
 	}
-	return false
+
+	if article.ID > 0 {
+		return true, nil
+	}
+
+	return false, nil
 }
 
 // AddArticle 添加文章
@@ -72,9 +95,9 @@ func UpdateArticle(id int, data Article) bool {
 }
 
 // DeleteArticle 删除文章
-func DeleteArticle(id int) bool {
-	if db.Where("id=?", id).Delete(&Article{}).Error != nil {
-		return false
+func DeleteArticle(id int) error {
+	if err := db.Where("id=?", id).Delete(&Article{}).Error; err != nil {
+		return err
 	}
-	return true
+	return nil
 }

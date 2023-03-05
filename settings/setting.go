@@ -57,6 +57,7 @@ type Redis struct {
 	MaxIdle     int           // 最大空闲连接数
 	MaxActive   int           // 在给定时间内，允许分配的最大连接数（当为0时，没有限制）
 	IdleTimeout time.Duration // 在给定时间内将会保持空闲状态，达到这个时间限制则会关闭连接（当为0时，没有限制）
+	ExpireTime  int           // 通用的到期时间
 }
 
 var RedisSetting = &Redis{}

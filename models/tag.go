@@ -10,60 +10,73 @@ type Tag struct {
 }
 
 // GetTags 获取标签列表
-func GetTags(pageNum int, pageSize int, maps interface{}) (tags []Tag) {
-	db.Debug().Where(maps).Offset(pageNum).Limit(pageSize).Find(&tags)
+func GetTags(pageNum int, pageSize int, maps interface{}) (tags []Tag, err error) {
+	err = db.Debug().Where(maps).Offset(pageNum).Limit(pageSize).Find(&tags).Error
+	if err != nil {
+		return nil, err
+	}
 	return
 }
 
 // GetTagTotal 获取标签数量
-func GetTagTotal(maps interface{}) (total int64) {
-	db.Model(&Tag{}).Where(maps).Count(&total)
+func GetTagTotal(maps interface{}) (total int64, err error) {
+	err = db.Model(&Tag{}).Where(maps).Count(&total).Error
+	if err != nil {
+		return 0, err
+	}
 	return
 }
 
 // ExistedTagByName 判断标签名称
-func ExistedTagByName(name string) bool {
+func ExistedTagByName(name string) (bool, error) {
 	var tag Tag
-	db.Select("id").Where("name=?", name).First(&tag)
-	if tag.ID > 0 {
-		return true
+	err := db.Select("id").Where("name=?", name).First(&tag).Error
+	if err != nil {
+		return false, err
 	}
-	return false
+	if tag.ID > 0 {
+		return true, nil
+	}
+	return false, nil
 }
 
 // ExistedTagById 判断标签ID
-func ExistedTagById(id int) bool {
+func ExistedTagById(id int) (bool, error) {
 	var tag Tag
-	db.Select("id").Where("id=?", id).Find(&tag)
-	if tag.ID > 0 {
-		return true
+	err := db.Select("id").Where("id=?", id).Find(&tag).Error
+	if err != nil {
+		return false, err
 	}
-	return false
+	return true, nil
 }
 
 // AddTag 添加标签
-func AddTag(name string, state int, createBy string) bool {
+func AddTag(name string, state int, createBy string) error {
 	err := db.Create(&Tag{
 		Name:      name,
 		State:     state,
 		CreatedBy: createBy,
 	}).Error
 	if err != nil {
-		return false
+		return err
 	}
-	return true
+	return nil
 }
 
 // UpdateTag 更新标签
-func UpdateTag(id int, data interface{}) bool {
-	db.Model(&Tag{}).Where("id=?", id).Updates(data)
-
-	return true
+func UpdateTag(id int, data interface{}) error {
+	err := db.Model(&Tag{}).Where("id=?", id).Updates(data).Error
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // DeleteTag 删除标签
-func DeleteTag(id int) bool {
-	db.Model(&Tag{}).Where("id=?", id).Delete(&Tag{})
-
-	return true
+func DeleteTag(id int) error {
+	err := db.Model(&Tag{}).Where("id=?", id).Delete(&Tag{}).Error
+	if err != nil {
+		return err
+	}
+	return nil
 }
