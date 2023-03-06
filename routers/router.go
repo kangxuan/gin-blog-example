@@ -3,6 +3,7 @@ package routers
 import (
 	_ "gin-blog-example/docs"
 	"gin-blog-example/middleware"
+	"gin-blog-example/pkg/export"
 	"gin-blog-example/pkg/upload"
 	"gin-blog-example/routers/api"
 	v1 "gin-blog-example/routers/api/v1"
@@ -33,8 +34,13 @@ func InitRouter() *gin.Engine {
 	// 图片上传
 	r.POST("/upload-image", api.UploadImage)
 
+	// 导出csv
+	r.POST("/export-csv", api.ExportCsv)
+
 	// 图片访问
 	r.StaticFS("/upload/images", http.Dir(upload.GetImageFullPath()))
+
+	r.StaticFS("/upload/export", http.Dir(export.GetExcelFullPath()))
 
 	// 注册路由
 	apiV1 := r.Group("/v1")

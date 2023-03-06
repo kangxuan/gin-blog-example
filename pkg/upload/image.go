@@ -13,7 +13,7 @@ import (
 	"strings"
 )
 
-// GetImagePath 获取图片保存的目录
+// GetImagePath 获取图片相对保存目录
 func GetImagePath() string {
 	return settings.AppSetting.ImageSavePath
 }
@@ -30,14 +30,14 @@ func GetImageName(name string) string {
 	return fileName + ext
 }
 
-// GetImageFullPath 获取图片保存的全目录
+// GetImageFullPath 获取图片绝对保存目录
 func GetImageFullPath() string {
 	return settings.AppSetting.RuntimeRootPath + GetImagePath()
 }
 
 // GetImageFullUrl 获取图片完整的访问路径
 func GetImageFullUrl(name string) string {
-	return settings.AppSetting.ImagePrefixUrl + GetImagePath() + name
+	return settings.AppSetting.PrefixUrl + GetImagePath() + name
 }
 
 // CheckImageExt 检查图片的后缀格式

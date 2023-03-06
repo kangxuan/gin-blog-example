@@ -28,6 +28,7 @@ var MsgFlags = map[int]string{
 	ERROR_UPLOAD_CHECK_IMAGE_SIZE:   "图片上传大小超限",
 	ERROR_UPLOAD_CHECK_IMAGE_FAIL:   "图片上传检查失败",
 	ERROR_UPLOAD_SAVE_IMAGE_FAIL:    "图片上传失败",
+	ERROR_UPLOAD_FORM_FILE_FAIL:     "图片上传FORM错误",
 }
 
 // GetMsg 获取错误信息
