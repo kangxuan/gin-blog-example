@@ -3,10 +3,14 @@ package tag_service
 import (
 	"encoding/json"
 	"gin-blog-example/models"
+	"gin-blog-example/pkg/export"
 	"gin-blog-example/pkg/gredis"
 	"gin-blog-example/pkg/logging"
 	"gin-blog-example/services/cache_service"
 	"gin-blog-example/settings"
+	"github.com/tealeg/xlsx"
+	"strconv"
+	time2 "time"
 )
 
 type Tag struct {
@@ -101,4 +105,60 @@ func (t *Tag) getMaps() map[string]interface{} {
 	}
 
 	return maps
+}
+
+// Export 导出
+func (t *Tag) Export() (string, error) {
+	tags, err := t.GetAll()
+	if err != nil {
+		return "", err
+	}
+
+	// 新建一个文件
+	file := xlsx.NewFile()
+	sheet, err := file.AddSheet("标签信息")
+	if err != nil {
+		return "", err
+	}
+
+	titles := []string{"ID", "名称", "创建人", "创建时间", "修改人", "修改时间"}
+	// 加一行
+	row := sheet.AddRow()
+
+	var cell *xlsx.Cell
+	for _, title := range titles {
+		// 加一个单元格
+		cell = row.AddCell()
+		cell.Value = title
+	}
+
+	for _, v := range tags {
+		values := []string{
+			strconv.Itoa(v.ID),
+			v.Name,
+			v.CreatedBy,
+			strconv.Itoa(v.CreatedOn),
+			v.ModifiedBy,
+			strconv.Itoa(v.ModifiedOn),
+		}
+
+		// 加一行
+		row = sheet.AddRow()
+		for _, value := range values {
+			// 加一个单元格
+			cell = row.AddCell()
+			cell.Value = value
+		}
+	}
+
+	time := strconv.Itoa(int(time2.Now().Unix()))
+	filename := "tags-" + time + ".xlsx"
+
+	fullPath := export.GetExcelFullPath() + filename
+	err = file.Save(fullPath)
+	if err != nil {
+		return "", err
+	}
+
+	return filename, nil
 }

@@ -45,6 +45,7 @@ require (
 	github.com/pelletier/go-toml/v2 v2.0.7 // indirect
 	github.com/robfig/cron v1.2.0 // indirect
 	github.com/shiena/ansicolor v0.0.0-20200904210342-c7312218db18 // indirect
+	github.com/tealeg/xlsx v1.0.5 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.10 // indirect
 	golang.org/x/arch v0.2.0 // indirect
