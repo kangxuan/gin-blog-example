@@ -1,6 +1,7 @@
 package file
 
 import (
+	"fmt"
 	"io"
 	"mime/multipart"
 	"os"
@@ -56,4 +57,30 @@ func Open(name string, flag int, perm os.FileMode) (*os.File, error) {
 	}
 
 	return file, nil
+}
+
+// MustOpen 打开文件，在之前要判断权限等
+func MustOpen(fileName, filePath string) (*os.File, error) {
+	dir, err := os.Getwd()
+	if err != nil {
+		return nil, fmt.Errorf("os.Getwd err: %v", err)
+	}
+
+	src := dir + "/" + filePath
+	perm := CheckPermission(src)
+	if perm == true {
+		return nil, fmt.Errorf("file.CheckPermisson Permission defined scr: %s", src)
+	}
+
+	err = IsNotExistedMkDir(src)
+	if err != nil {
+		return nil, fmt.Errorf("file.IsNotExistedMkDir src: %s, err: %v", src, err)
+	}
+
+	f, err := Open(src+fileName, os.O_APPEND|os.O_CREATE|os.O_RDWR, 0644)
+	if err != nil {
+		return nil, fmt.Errorf("fail to OpenFile :%v", err)
+	}
+
+	return f, nil
 }

@@ -60,6 +60,7 @@ func InitRouter() *gin.Engine {
 		apiV1.POST("/articles", v1.AddArticle)
 		apiV1.PUT("/articles/:id", v1.UpdateArticle)
 		apiV1.DELETE("/articles/:id", v1.DeleteArticle)
+		apiV1.POST("/articles/poster/generate", v1.GenerateArticlePoster)
 	}
 
 	return r

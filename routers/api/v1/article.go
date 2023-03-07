@@ -4,14 +4,20 @@ import (
 	"gin-blog-example/models"
 	"gin-blog-example/pkg/app"
 	"gin-blog-example/pkg/e"
+	"gin-blog-example/pkg/qrcode"
 	"gin-blog-example/pkg/util"
 	"gin-blog-example/services/article_service"
 	"gin-blog-example/services/tag_service"
 	"gin-blog-example/settings"
 	"github.com/astaxie/beego/validation"
+	"github.com/boombuler/barcode/qr"
 	"github.com/gin-gonic/gin"
 	"github.com/unknwon/com"
 	"net/http"
+)
+
+var (
+	QRCODE_URL = "https://github.com/EDDYCJY/blog#gin%E7%B3%BB%E5%88%97%E7%9B%AE%E5%BD%95"
 )
 
 // GetArticles godoc
@@ -255,6 +261,23 @@ func DeleteArticle(c *gin.Context) {
 	err = articleService.Delete()
 	if err != nil {
 		appG.Response(http.StatusInternalServerError, e.ERROR_DELETE_ARTCLIE_FAIL, nil)
+		return
+	}
+
+	appG.Response(http.StatusOK, e.SUCCESS, nil)
+}
+
+// GenerateArticlePoster 生成二维码
+func GenerateArticlePoster(c *gin.Context) {
+	var (
+		appG = app.Gin{C: c}
+	)
+
+	qrc := qrcode.NewQrCode(QRCODE_URL, 300, 300, qr.M, qr.Auto)
+	path := qrcode.GetQrCodeFullPath()
+	_, _, err := qrc.Encode(path)
+	if err != nil {
+		appG.Response(http.StatusOK, e.ERROR, nil)
 		return
 	}
 
