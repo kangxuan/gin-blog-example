@@ -273,13 +273,31 @@ func GenerateArticlePoster(c *gin.Context) {
 		appG = app.Gin{C: c}
 	)
 
+	article := &article_service.Article{}
+
+	// 生成二维码
 	qrc := qrcode.NewQrCode(QRCODE_URL, 300, 300, qr.M, qr.Auto)
-	path := qrcode.GetQrCodeFullPath()
-	_, _, err := qrc.Encode(path)
+
+	posterName := article_service.GetPosterFlag() + "-" + qrcode.GetQrCodeFileName(qrc.URL) + qrc.GetQrCodeExt()
+	articlePoster := article_service.NewArticlePoster(posterName, article, qrc)
+	articlePosterBgService := article_service.NewArticlePosterBg("bg.jpeg", articlePoster, &article_service.Rect{
+		X0: 0,
+		Y0: 0,
+		X1: 550,
+		Y1: 700,
+	}, &article_service.Pt{
+		X: 125,
+		Y: 298,
+	})
+
+	_, filePath, err := articlePosterBgService.Generate()
 	if err != nil {
-		appG.Response(http.StatusOK, e.ERROR, nil)
+		appG.Response(http.StatusOK, e.ERROR_GEN_ARTICLE_POSTER_FAIL, nil)
 		return
 	}
 
-	appG.Response(http.StatusOK, e.SUCCESS, nil)
+	appG.Response(http.StatusOK, e.SUCCESS, map[string]string{
+		"poster_url":      qrcode.GetQrCodeFullUrl(posterName),
+		"poster_save_url": filePath + posterName,
+	})
 }
