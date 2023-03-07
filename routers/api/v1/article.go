@@ -278,8 +278,11 @@ func GenerateArticlePoster(c *gin.Context) {
 	// 生成二维码
 	qrc := qrcode.NewQrCode(QRCODE_URL, 300, 300, qr.M, qr.Auto)
 
+	// 组装海报的名称
 	posterName := article_service.GetPosterFlag() + "-" + qrcode.GetQrCodeFileName(qrc.URL) + qrc.GetQrCodeExt()
+	// 生成海报
 	articlePoster := article_service.NewArticlePoster(posterName, article, qrc)
+	// 生成背景
 	articlePosterBgService := article_service.NewArticlePosterBg("bg.jpeg", articlePoster, &article_service.Rect{
 		X0: 0,
 		Y0: 0,
@@ -290,6 +293,7 @@ func GenerateArticlePoster(c *gin.Context) {
 		Y: 298,
 	})
 
+	// 生成海报背景
 	_, filePath, err := articlePosterBgService.Generate()
 	if err != nil {
 		appG.Response(http.StatusOK, e.ERROR_GEN_ARTICLE_POSTER_FAIL, nil)

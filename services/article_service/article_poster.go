@@ -16,6 +16,7 @@ type ArticlePoster struct {
 	Qr         *qrcode.QrCode
 }
 
+// NewArticlePoster 创建一个海报
 func NewArticlePoster(postName string, article *Article, qr *qrcode.QrCode) *ArticlePoster {
 	return &ArticlePoster{
 		PosterName: postName,
