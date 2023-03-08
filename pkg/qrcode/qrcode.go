@@ -7,6 +7,7 @@ import (
 	"github.com/boombuler/barcode"
 	"github.com/boombuler/barcode/qr"
 	"image/jpeg"
+	"os"
 )
 
 type QrCode struct {
@@ -73,23 +74,33 @@ func (q *QrCode) Encode(path string) (string, string, error) {
 	// 生成二维码的图片名称
 	name := GetQrCodeFileName(q.URL) + q.GetQrCodeExt()
 	src := path + name
+	// 如果二维码不存在则创建
 	if file.CheckExisted(src) == true {
+		// 返回QR二维码
 		code, err := qr.Encode(q.URL, q.Level, q.Mode)
 		if err != nil {
 			return "", "", err
 		}
 
+		// 给二维码设置高宽
 		code, err = barcode.Scale(code, q.Width, q.Height)
 		if err != nil {
 			return "", "", err
 		}
 
+		// 生成一个文件
 		f, err := file.MustOpen(name, path)
 		if err != nil {
 			return "", "", err
 		}
-		defer f.Close()
+		defer func(f *os.File) {
+			err := f.Close()
+			if err != nil {
+				panic(err)
+			}
+		}(f)
 
+		// 将二维码以 JPEG 4：2：0 基线格式写入文件
 		err = jpeg.Encode(f, code, nil)
 		if err != nil {
 			return "", "", err

@@ -171,6 +171,7 @@ type DrawText struct {
 	Size1    float64
 }
 
+// DrawPoster 绘制海报
 func (a *ArticlePosterBg) DrawPoster(d *DrawText, fontName string) error {
 	// 读取字体库
 	fontSource := settings.AppSetting.RuntimeRootPath + settings.AppSetting.FontSavePath + fontName
