@@ -49,7 +49,6 @@ func GetArticles(c *gin.Context) {
 		valid.Min(tagId, 1, "tag_id").Message("标签ID必须大于0")
 	}
 
-	code := e.INVALID_PARAMS
 	if valid.HasErrors() {
 		app.MarkErrors(valid.Errors)
 		appG.Response(http.StatusOK, e.INVALID_PARAMS, nil)
@@ -77,11 +76,7 @@ func GetArticles(c *gin.Context) {
 	data["list"] = articles
 	data["total"] = total
 
-	c.JSON(http.StatusOK, gin.H{
-		"code": code,
-		"msg":  e.GetMsg(code),
-		"data": data,
-	})
+	appG.Response(http.StatusOK, e.SUCCESS, data)
 }
 
 // GetArticle godoc
