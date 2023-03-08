@@ -5,6 +5,7 @@ import (
 	"gin-blog-example/pkg/app"
 	"gin-blog-example/pkg/e"
 	"gin-blog-example/pkg/export"
+	"gin-blog-example/pkg/logging"
 	"gin-blog-example/pkg/util"
 	"gin-blog-example/services/tag_service"
 	"gin-blog-example/settings"
@@ -199,4 +200,26 @@ func ExportTag(c *gin.Context) {
 		"export_url":      export.GetExcelFullUrl(filename),
 		"export_save_url": export.GetExcelFullPath() + filename,
 	})
+}
+
+// ImportTag 导入标签失败
+func ImportTag(c *gin.Context) {
+	appG := app.Gin{C: c}
+
+	file, _, err := c.Request.FormFile("file")
+	if err != nil {
+		logging.Warn(err)
+		appG.Response(http.StatusOK, e.ERROR, nil)
+		return
+	}
+
+	tagService := tag_service.Tag{}
+	err = tagService.Import(file)
+	if err != nil {
+		logging.Warn(err)
+		appG.Response(http.StatusOK, e.ERROR_IMPORT_TAG_FAIL, nil)
+		return
+	}
+
+	appG.Response(http.StatusOK, e.SUCCESS, nil)
 }

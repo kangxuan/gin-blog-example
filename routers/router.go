@@ -53,6 +53,7 @@ func InitRouter() *gin.Engine {
 		apiV1.PUT("/tags/:id", v1.UpdateTag)
 		apiV1.DELETE("/tags/:id", v1.DeleteTag)
 		r.GET("/tags/export", v1.ExportTag)
+		r.POST("tags/import", v1.ImportTag)
 
 		// 文章
 		apiV1.GET("/articles", v1.GetArticles)

@@ -11,7 +11,14 @@ type Tag struct {
 
 // GetTags 获取标签列表
 func GetTags(pageNum int, pageSize int, maps interface{}) (tags []Tag, err error) {
-	err = db.Debug().Where(maps).Offset(pageNum).Limit(pageSize).Find(&tags).Error
+	tx := db.Debug().Where(maps)
+	if pageNum > 0 {
+		tx.Offset(pageNum)
+	}
+	if pageSize > 0 {
+		tx.Limit(pageSize)
+	}
+	err = tx.Find(&tags).Error
 	if err != nil {
 		return nil, err
 	}

@@ -9,6 +9,8 @@ import (
 	"gin-blog-example/services/cache_service"
 	"gin-blog-example/settings"
 	"github.com/tealeg/xlsx"
+	"github.com/xuri/excelize/v2"
+	"io"
 	"strconv"
 	time2 "time"
 )
@@ -107,7 +109,7 @@ func (t *Tag) getMaps() map[string]interface{} {
 	return maps
 }
 
-// Export 导出
+// Export 导出表格
 func (t *Tag) Export() (string, error) {
 	tags, err := t.GetAll()
 	if err != nil {
@@ -116,11 +118,13 @@ func (t *Tag) Export() (string, error) {
 
 	// 新建一个文件
 	file := xlsx.NewFile()
+	// 添加一个新Sheet，并命名为"标签信息"
 	sheet, err := file.AddSheet("标签信息")
 	if err != nil {
 		return "", err
 	}
 
+	// 将标题写入一行
 	titles := []string{"ID", "名称", "创建人", "创建时间", "修改人", "修改时间"}
 	// 加一行
 	row := sheet.AddRow()
@@ -132,6 +136,7 @@ func (t *Tag) Export() (string, error) {
 		cell.Value = title
 	}
 
+	// 将查询出来的数据写入表格
 	for _, v := range tags {
 		values := []string{
 			strconv.Itoa(v.ID),
@@ -151,14 +156,45 @@ func (t *Tag) Export() (string, error) {
 		}
 	}
 
+	// 表格名称
 	time := strconv.Itoa(int(time2.Now().Unix()))
 	filename := "tags-" + time + ".xlsx"
 
 	fullPath := export.GetExcelFullPath() + filename
+	// 保存表格
 	err = file.Save(fullPath)
 	if err != nil {
 		return "", err
 	}
 
 	return filename, nil
+}
+
+// Import 导入表格
+func (t *Tag) Import(r io.Reader) error {
+	// 读取文件
+	xlsxReader, err := excelize.OpenReader(r)
+	if err != nil {
+		return err
+	}
+
+	// 读取哪个表格
+	rows, err := xlsxReader.GetRows("Sheet1")
+	if err != nil {
+		return err
+	}
+	// 将数据写入数据库
+	for index, row := range rows {
+		if index > 0 {
+			var data []string
+			for _, cell := range row {
+				data = append(data, cell)
+			}
+			err := models.AddTag(data[1], 1, data[2])
+			if err != nil {
+				return err
+			}
+		}
+	}
+	return nil
 }
